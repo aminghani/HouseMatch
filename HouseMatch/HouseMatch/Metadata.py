@@ -39,9 +39,10 @@ class LocationSheypoor(Enum):
     YAZD = 'yazd-province'
     KUHGILUYEH = 'kohgiluyeh-boyerahmad'
     SISTAN = 'sistan-baluchestan'
- 
+
 class CategoryDivar(Enum):
     HOUSE_BALL = 'buy-apartment'
+    HOUSE_RENT = 'rent-apartment'
 
 class LocationDivar(Enum):
     TEHRAN = 'tehran-province'
@@ -82,7 +83,7 @@ def build_urls_divar():
     for location in LocationDivar.__members__.values():
         url_to_add = BASE_URL_DIVAR + location.value + '/'
         for category in CategoryDivar.__members__.values():
-            urls.append(url_to_add + category.value)
+            urls.append(url_to_add + category.value + '?sort=sort_date')
     return urls
 
 def build_urls_sheypoor():

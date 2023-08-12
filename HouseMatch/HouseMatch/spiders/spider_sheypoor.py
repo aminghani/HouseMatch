@@ -4,7 +4,6 @@ from datetime import datetime
 from items import HouseSale, Houserent
 import HouseMatch.Metadata as md
 
-translation_table = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
 
 class SheypoorSpider(scrapy.Spider):
     name = "house_sheypoor"

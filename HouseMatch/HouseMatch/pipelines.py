@@ -4,7 +4,7 @@ from itemadapter import ItemAdapter
 
 class MyPipeline:
     def open_spider(self, spider):
-        self.file = open("items.jsonl", "a", encoding="utf-8")
+        self.file = open("data_temp/items.jsonl", "a", encoding="utf-8")
     
     def close_spider(self, spider):
         self.file.close()
