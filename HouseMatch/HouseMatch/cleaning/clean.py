@@ -1,6 +1,7 @@
 import json
 from HouseMatch.HouseMatch.models import House
 import pandas as pd
+import os
 
 TRANSLATION_TABLE = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
 
@@ -12,9 +13,11 @@ class Clean:
 
     def load_raw_data(self):
         data = []
-        with open('/home/amin/vscode/HouseMatch/HouseMatch/HouseMatch/data_temp/items.jsonl', 'r') as file:
-            for line in file:
-                data.append(json.loads(line))
+        file_path = '/home/amin/vscode/HouseMatch/HouseMatch/HouseMatch/data_temp/items.jsonl'
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                for line in file:
+                    data.append(json.loads(line))
         
         return data
     
@@ -65,7 +68,7 @@ class Clean:
                 try:
                     rent = details['رهن'].replace('تومان','')
                     rent = rent.replace(',', '')
-                    mortgage = int(mortgage)
+                    rent = int(rent)
                 except:
                     rent = None
             elevator = None
@@ -98,12 +101,12 @@ class Clean:
              "age": house.age,}
             for house in houses]
         df = pd.DataFrame(data)
-
+        df = df.drop_duplicates()
         # Specify the CSV file path
         csv_file_path = "/home/amin/vscode/HouseMatch/HouseMatch/HouseMatch/data_temp/cleaned_data.csv"
 
         # Save the DataFrame to a CSV file
-        df.to_csv(csv_file_path, index=False)
+        df.to_csv(csv_file_path, mode='a', header=False, index=False)
 
     def _to_bool(self, string):
         if string == 'دارد':
