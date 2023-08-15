@@ -2,6 +2,7 @@ import scrapy
 from bs4 import BeautifulSoup
 import HouseMatch.Metadata as md 
 from datetime import datetime
+from items import HouseSale, Houserent
 
 class DivarSpider(scrapy.Spider):
     name = "house_divar"
@@ -46,5 +47,5 @@ class DivarSpider(scrapy.Spider):
         attr.append(parking.string if parking else None)
         attr.append(store.string if store else None)
         details['attributes'] = attr
-        yield items.HouseSale(title=title, price=price, location_site=location_site.value, category_site=category_site.value,
+        yield HouseSale(title=title, price=price, location_site=location_site.value, category_site=category_site.value,
                          date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), details=details)

@@ -5,6 +5,7 @@ from airflow.operators.python_operator import PythonOperator
 from HouseMatch.HouseMatch.cleaning.clean import Clean
 from HouseMatch.HouseMatch.utils.utils import delete_tmp_files, drop_duplicates
 from airflow.contrib.sensors.file_sensor import FileSensor
+import HouseMatch.HouseMatch.config as cf
 
 default_args = {
     'owner': 'amin',
@@ -27,13 +28,13 @@ dag = DAG(
 
 extract_task = BashOperator(
     task_id='extract_task',
-    bash_command='bash /home/amin/vscode/HouseMatch/HouseMatch/HouseMatch/start_scrape.sh ' ,
+    bash_command=f'bash {cf.HOME_PATH}/HouseMatch/HouseMatch/start_scrape.sh ' ,
     dag=dag
 )
 
 file_sensor_task = FileSensor(
         task_id='file_sensor_task',
-        filepath='/home/amin/vscode/HouseMatch/HouseMatch/HouseMatch/data_temp/items.jsonl',
+        filepath=f'{cf.HOME_PATH}/HouseMatch/HouseMatch/data_temp/items.jsonl',
         mode='poke',
         poke_interval=20,
         dag=dag  # Specify the interval to check for the file existence
@@ -56,4 +57,11 @@ drop_duplicates_task = PythonOperator(
     python_callable=drop_duplicates,
     dag=dag
 )
-extract_task >> file_sensor_task >> clean_data >> remove_temp_files >> drop_duplicates_task
+
+save_to_elastic = BashOperator(
+    task_id='save_to_elastic',
+    bash_command=f'bash {cf.HOME_PATH}/HouseMatch/HouseMatch/elastic/add_elastic.sh ',
+    dag=dag
+)
+
+extract_task >> file_sensor_task >> clean_data >> remove_temp_files >> drop_duplicates_task >> save_to_elastic
