@@ -6,14 +6,21 @@ import HouseMatch.Metadata as md
 
 
 class SheypoorSpider(scrapy.Spider):
-    name = "house_sheypoor"
+    """
+    This class extracts needed data from Sheypoor
 
+    """
+    name = "house_sheypoor"
 
     def __init__(self, *args, **kwargs):
         super(SheypoorSpider, self).__init__(*args, **kwargs)
         self.start_urls = md.build_urls_sheypoor()
 
     def parse(self, response):
+        """
+        Follows posts in the first page
+
+        """
         url = response.url
         location_site = [loc for loc in md.LocationSheypoor if loc.value in url][0]
         category_site = [cat for cat in md.CategorySheypoor if cat.value in url][0]
@@ -27,9 +34,11 @@ class SheypoorSpider(scrapy.Spider):
 
 
 
-
-
     def parse_new_page(self, response, location_site, category_site):
+        """
+        Extract the necessary fields
+    
+        """
         res = response.css('div.r2eAR').get()
         soup = BeautifulSoup(res, 'html.parser')
         title = soup.find('h1', {'class': 'mjNIv'})
@@ -40,8 +49,10 @@ class SheypoorSpider(scrapy.Spider):
         details = {}
         keys_detail = soup.find_all('p', {'class': "_2e124"})
         values_detail = soup.find_all('p', {'class': '_874-x'})
+
         for i in range(len(keys_detail)):
             details[keys_detail[i].string] = values_detail[i].string
         yield HouseSale(title=title_value, price=price_value, date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        
               location_site=location_site.value, category_site=category_site.value, details=details)
 

@@ -3,9 +3,14 @@ from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from HouseMatch.HouseMatch.cleaning.clean import Clean
-from HouseMatch.HouseMatch.utils.utils import delete_tmp_files, drop_duplicates
+from HouseMatch.HouseMatch.utils.utils import delete_tmp_files, drop_duplicates, add_headers_csv
 from airflow.contrib.sensors.file_sensor import FileSensor
 import HouseMatch.HouseMatch.config as cf
+
+"""
+this file contains the airflow dag for scraping the 
+data and saving it to elasticsearch and postgres.
+"""
 
 default_args = {
     'owner': 'amin',
@@ -16,8 +21,7 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=5)
 }
-def func():
-    pass
+
 dag = DAG(
     'scraping_houses',
     default_args=default_args,
@@ -37,12 +41,18 @@ file_sensor_task = FileSensor(
         filepath=f'{cf.HOME_PATH}/HouseMatch/HouseMatch/data_temp/items.jsonl',
         mode='poke',
         poke_interval=20,
-        dag=dag  # Specify the interval to check for the file existence
+        dag=dag  
     )
 
-clean_data = PythonOperator(
+clean_data = BashOperator(
     task_id='clean_and_save_csv',
-    python_callable=Clean().clean_and_save,
+    bash_command=f'bash {cf.HOME_PATH}/HouseMatch/HouseMatch/cleaning/clean.sh ',
+    dag=dag
+)
+
+add_headers = PythonOperator(
+    task_id='add_headers',
+    python_callable=add_headers_csv,
     dag=dag
 )
 
@@ -64,4 +74,11 @@ save_to_elastic = BashOperator(
     dag=dag
 )
 
-extract_task >> file_sensor_task >> clean_data >> remove_temp_files >> drop_duplicates_task >> save_to_elastic
+save_to_postgres = BashOperator(
+    task_id='save_to_postgres',
+    bash_command=f'bash {cf.HOME_PATH}/HouseMatch/HouseMatch/postgres/add_postgres.sh ',
+    dag=dag
+)
+
+extract_task >> file_sensor_task >> clean_data >> add_headers >> remove_temp_files >> drop_duplicates_task >> \
+[save_to_postgres, save_to_elastic]
