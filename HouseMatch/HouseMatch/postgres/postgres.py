@@ -11,7 +11,7 @@ class Postgres:
     Conncets and adds data to postgres 
     """
     def __init__(self):
-        DATABASE_URL = "postgresql://postgres:postgres@localhost/HouseMatch"
+        DATABASE_URL = f"postgresql://{cf.POSRGRES_USERNAME}:{cf.POSTGRES_DATABASE_PASS}@{cf.POSTGRES_HOST}/{cf.POSTGRES_DATABASE_NAME}"
         self.engine = create_engine(DATABASE_URL)    
         self.data_csv = pd.read_csv(f'{cf.HOME_PATH}/HouseMatch/HouseMatch/data_temp/cleaned_data.csv')
     

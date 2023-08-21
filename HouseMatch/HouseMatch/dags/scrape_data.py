@@ -19,14 +19,14 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
-    'retry_delay': timedelta(minutes=5)
+    'retry_delay': timedelta(minutes=cf.AIRFLOW_DAG_FREQ_M)
 }
 
 dag = DAG(
     'scraping_houses',
     default_args=default_args,
     description='This Dag is for Extracting data from divar and Sheypoor.',
-    schedule_interval=timedelta(minutes=5),
+    schedule_interval=timedelta(minutes=10),
     max_active_runs=1
 )
 
@@ -80,5 +80,5 @@ save_to_postgres = BashOperator(
     dag=dag
 )
 
-extract_task >> file_sensor_task >> clean_data >> add_headers >> remove_temp_files >> drop_duplicates_task >> \
+extract_task >> file_sensor_task >> clean_data >> remove_temp_files >> drop_duplicates_task >> \
 [save_to_postgres, save_to_elastic]

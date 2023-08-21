@@ -6,7 +6,7 @@ def delete_tmp_files():
     """
     delete the temp files
     """
-    file_path = f'{cf.HOME_PATH}/HouseMatch/HouseMatch/data_temp/items.csv'
+    file_path = f'{cf.HOME_PATH}/HouseMatch/HouseMatch/data_temp/items.jsonl'
 
     if os.path.exists(file_path):
         
@@ -21,7 +21,7 @@ def drop_duplicates():
     data = pd.read_csv(file_path)
     data = data.drop_duplicates()
 
-    data.to_csv(file_path, header=False, index=False)
+    data.to_csv(file_path, index=False)
 
 def add_headers_csv():
     """

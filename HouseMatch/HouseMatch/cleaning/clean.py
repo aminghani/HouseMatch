@@ -49,7 +49,7 @@ class Clean:
                 try:
                     price = price.replace(',', '')
                     price = price.replace('٬', '')
-                    price = int(price)
+                    price = float(price)
                 except:
                     price=None
             
@@ -62,7 +62,7 @@ class Clean:
             if 'متراژ' in details:
                 area = details['متراژ']
                 area = area.replace(',', "")
-                area = int(area)
+                area = float(area)
             
             post_type = None
             if 'نوع ملک' in details:
@@ -74,7 +74,7 @@ class Clean:
                     room_count = 0
                 else:
                     try:
-                        room_count = int(details['تعداد اتاق'])
+                        room_count = float(details['تعداد اتاق'])
                     except:
                         room_count = None
             
@@ -83,7 +83,7 @@ class Clean:
                 try:
                     mortgage = details['رهن'].replace('تومان','')
                     mortgage = mortgage.replace(',', '')
-                    mortgage = int(mortgage)
+                    mortgage = float(mortgage)
                 except:
                     mortgage = None
             
@@ -92,7 +92,7 @@ class Clean:
                 try:
                     rent = details['اجاره'].replace('تومان','')
                     rent = rent.replace(',', '')
-                    rent = int(rent)
+                    rent = float(rent)
                 except:
                     rent = None
             
@@ -114,7 +114,7 @@ class Clean:
             if 'سن بنا' in details:
                 age = details['سن بنا'].replace('سال', '')
                 try:
-                   age = int(age)
+                   age = float(age)
                 except:
                     age = None
             
@@ -122,7 +122,7 @@ class Clean:
                 try:
                     mortgage = details['ودیعه'].replace('تومان','')
                     mortgage = mortgage.replace('٬', '')
-                    mortgage = int(mortgage)
+                    mortgage = float(mortgage)
                 except:
                     rent = None
             
@@ -130,7 +130,7 @@ class Clean:
                 try:
                     rent = details['رهن'].replace('تومان','')
                     rent = rent.replace('٬', '')
-                    rent = int(rent)
+                    rent = float(rent)
                 except:
                     rent = None
             
@@ -177,7 +177,7 @@ class Clean:
         
         csv_file_path = f"{cf.HOME_PATH}/HouseMatch/HouseMatch/data_temp/cleaned_data.csv"
 
-        df.to_csv(csv_file_path, mode='a', header=False, index=False)
+        df.to_csv(csv_file_path, index=False)
 
     def _to_bool(self, string):
         """
@@ -195,3 +195,5 @@ class Clean:
         else:
             False
 
+if __name__ == '__main__':
+    Clean().clean_and_save()
