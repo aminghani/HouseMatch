@@ -1,5 +1,6 @@
-
 Scrapy==2.10.0
 pandas==2.0.3
 apache-airflow==2.6.3
 beautifulsoup4==4.12.2
+psycopg2-binary=2.9.7
+elasticsearch==8.9.0
